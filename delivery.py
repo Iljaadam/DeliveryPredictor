@@ -24,11 +24,11 @@ data = load_data()
 # Display the raw data
 st.header('Raw Delivery Data')
 st.write("""
-The **raw data** represents the initial dataset collected from various sources before any processing.
-Displaying the raw data helps us to:
-- Understand the chaotic structure and contents of the dataset.
-- Identify any obvious data quality issues, such as missing values or incorrect data types.
-- Gain initial insights into the data to figure out how to preprocess it.
+This **raw data** represents the initial dataset collected from moodle, which encompasses vast amounts of details about the deliveries.
+Displaying the raw data aids us in many things:
+- Allows us to grasp the chaotic structure and contents of the dataset.
+- To identify any glaring data quality issues, such as missing values or incorrect data types.
+- To get insights into the data in order to figure out how to preprocess it.
 """)
 st.write(data.head())
 
@@ -91,12 +91,12 @@ processed_data = preprocess_data(data)
 # Display the processed data
 st.header('Processed Data')
 st.write("""
-After preprocessing, the data is transformed into a suitable format for modeling.
-Key steps:
-- Handling missing values to ensure data completeness.
-- Encoding categorical variables to numerical values for model compatibility.
-- Calculating additional features (e.g., **Preparation_Time**, **Distance_km**) that may influence delivery time.
-- Dropping irrelevant columns to reduce noise and improve model performance.
+Right after preprocessing, the data is transformed into an optimal format for the model.
+The key steps her are:
+- To ensure the completeness of the data by taking care of missing fields and so on.
+- To encode the categorical variables into the ones the model could understand, like one-hot-encoding.
+- Other variables that need additional calculation must be ready for use.
+- To remove any insignificant columns, that may introduce unwanted noise.
 """)
 st.write(processed_data.head())
 
@@ -106,9 +106,8 @@ y = processed_data['Time_taken (min)']
 
 st.header('Data Splitting')
 st.write("""
-Splitting the dataset into training and testing sets allows us to evaluate the model's performance on unseen data.
-This helps in assessing the model's generalization ability and prevents overfitting.
-""")
+In order for us to be able to evaluate the model properly, we need to split the dataset into the train and yet unseen by the model, testing data.
+This is crucial, because it minimizes the risk of overfitting and gives us feedback on the applications of the model.""")
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
@@ -118,9 +117,8 @@ st.write(f"**Testing set size:** {X_test.shape[0]} samples")
 
 st.header('Model Training and Cross-Validation')
 st.write("""
-We use a **Random Forest Regressor** model due to its robustness and ability to handle non-linear relationships.
-Cross-validation is employed to assess the model's performance across different subsets of the training data.
-""")
+We use common **Random Forest Regressor** model because of its ability to handle non-linear relationships.
+And in order to assess the performance of the model, we use cross validated MAE Scores.""")
 model = RandomForestRegressor(random_state=42)
 
 # Perform cross-validation on the training set using Mean Absolute Error (MAE) as the scoring metric
@@ -134,7 +132,7 @@ model.fit(X_train, y_train)
 
 st.header('Model Evaluation on Test Set')
 st.write("""
-After training, we evaluate the model's performance on the test set to see how well it generalizes to new data.
+After training, we test the model's performance on the undseen data to figure out how well it predicts on new data.
 """)
 # Predict on the test set
 y_pred_test = model.predict(X_test)
@@ -152,18 +150,16 @@ col3.metric('R² Score', f'{r2:.2f}')
 
 st.write("""
 **Evaluation Metrics:**
-- **Mean Absolute Error (MAE):** The average absolute difference between the predicted and actual delivery times.
-  - Lower MAE indicates better model performance.
-- **Root Mean Squared Error (RMSE):** The square root of the average squared differences between predicted and actual values.
-  - Penalizes larger errors more than MAE.
-- **R² Score:** Represents the proportion of variance in the dependent variable that is predictable from the independent variables.
-  - Values closer to 1 indicate a better fit.
+- We would say that the MAE is reasonably low, and usually the lower it is, the better performance the model shows.
+- RMSE also shows a good indication, but it seems that the errors might be on the larger side, due to it going up rather drastically. Which is hardly a good sign. 
+- Values of R squared closer to 1 indicate a better fit, which is 0.82 in our case, which is not ideal, but acceptable.
 """)
 
 st.header('Residual Analysis')
 st.write("""
-Analyzing the residuals (differences between actual and predicted values) helps us understand the model's errors.
-Ideally, residuals should be randomly distributed around zero, indicating no patterns left unexplained by the model.
+Residuals analysis allows us to visualize the distribution of errors.
+Ideally, residuals should be randomly distributed around zero, meaning that there is no undiscovered pattern. But in our case it's unfortunately rather normally distributed.
+Which tends to mean that our model has not accounted for all patterns in the data.
 """)
 residuals = y_test - y_pred_test
 residuals_df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred_test, 'Residuals': residuals})
@@ -180,8 +176,8 @@ st.altair_chart(hist_chart, use_container_width=True)
 
 st.header('Feature Importance')
 st.write("""
-Understanding which features have the most influence on the delivery time can provide valuable insights.
-This can help in focusing efforts on the most impactful areas.
+Feature list is intresting and significant, because it allows us to see which features affect the prediction the most.
+Allowing us to tap into the underlying patterns and reasonings.
 """)
 feature_importances = pd.Series(model.feature_importances_, index=X.columns)
 top_features = feature_importances.nlargest(5).reset_index()
@@ -199,12 +195,11 @@ st.altair_chart(chart, use_container_width=True)
 
 st.write("""
 - The features with the highest importance scores are the most influential in predicting delivery time.
-- This information can guide operational improvements.
 """)
 
 st.header('Delivery Time Distribution')
 st.write("""
-Visualizing the distribution of delivery times helps us understand the overall performance and identify any outliers.
+Visualizing the distribution of delivery times, allowing us to spot outliers and paint us a broader picture.
 """)
 delivery_time_df = pd.DataFrame({'Delivery Time (min)': y})
 hist_chart = alt.Chart(delivery_time_df).mark_bar().encode(
@@ -218,7 +213,7 @@ st.altair_chart(hist_chart, use_container_width=True)
 
 st.header('Predictive Analysis on Test Set')
 st.write("""
-Comparing actual and predicted delivery times on the test set allows us to see how well the model performs on unseen data.
+Comparison of actual and predicted delivery times. 
 """)
 # Create a DataFrame with actual and predicted values
 results_df = pd.DataFrame({
@@ -230,27 +225,25 @@ st.write(results_df.head())
 
 st.write("""
 - The table shows individual predictions compared to actual delivery times.
-- Smaller differences indicate better predictions.
+- The less the difference is, the more accurate the model is.
 """)
 
 st.header('Solutions for Improving Delivery Time')
 st.write("""
 Based on the analysis, the following solutions can help reduce delivery times:
-- **Optimize Delivery Routes:**
-  - Use of advanced routing algorithms to find the shortest and fastest paths.
-- **Real-Time Traffic Monitoring:**
-  - Integrate traffic data to avoid congested areas, especially during peak hours.
-- **Vehicle Maintenance Programs:**
-  - Regularly service delivery vehicles to prevent delays due to breakdowns.
-- **Weather Preparedness:**
-  - Provide equipment or training to handle adverse weather conditions effectively.
-- **Streamline Order Preparation:**
-  - Improve coordination between order placement and preparation to reduce waiting times.
+- **Potential optimizaztion of the delivery routes:**
+  - With the use of advanced routing algorithms it may prove feasible to simply optimize the physical aspect of the delivery.
+- **Traffic Monitoring in real time:**
+  - It may be possible to avoid high traffic areas with real time monitoring to minimize the time spent there.
+- **Weather Conditions:**
+  - Some advanved weather predictions may be employed and/or improvement of the equipment to negate the weather disadvantage.
+- **Improve Order Logistics:**
+  - Order pick ups and preparation times might be bottlenecking the delivery times, which could be solved by minimizing the time driver waits for delivery to be ready for pick up.
 """)
 
 st.header('Conclusion')
 st.write(f"""
 The predictive model demonstrates a good ability to estimate delivery times, with a Mean Absolute Error of **{mae:.2f} minutes**.
 Also the Residual Analysis shows seemingly normal distribution around 0, which means that some of the relationships still need to be found.
-This not only enhances customer satisfaction but can also lead to cost savings and better resource management.
+This research and the model do not only enhance customer satisfaction but can also lead to cost savings and better resource management.
 """)
