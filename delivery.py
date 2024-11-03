@@ -52,7 +52,6 @@ def haversine_distance(row):
 
 data['distance_km'] = data.apply(haversine_distance, axis=1)
 
-# Step 3: Exploratory Data Analysis (EDA)
 st.header('Exploratory Data Analysis')
 
 # Distribution of Delivery Time
@@ -82,7 +81,6 @@ corr_chart = alt.Chart(corr).mark_rect().encode(
 )
 st.altair_chart(corr_chart, use_container_width=True)
 
-# Step 4: Feature Encoding
 st.header('Feature Encoding')
 
 # Select categorical and numerical columns
@@ -101,7 +99,6 @@ for col in label_enc_cols:
 one_hot_cols = ['Type_of_order', 'Type_of_vehicle']
 data = pd.get_dummies(data, columns=one_hot_cols)
 
-# Step 5: Feature Selection
 st.header('Feature Selection')
 
 # Define features and target
@@ -112,7 +109,6 @@ y = data['Time_taken (min)']
 st.write('**Selected Features:**')
 st.write(X.columns.tolist())
 
-# Step 6: Model Training
 st.header('Model Training')
 
 # Split the data
@@ -124,7 +120,6 @@ model = RandomForestRegressor(random_state=42, n_estimators=100)
 # Train the model
 model.fit(X_train, y_train)
 
-# Step 7: Model Evaluation
 st.header('Model Evaluation')
 
 # Predict on test set
@@ -171,7 +166,6 @@ st.write("""
 - Businesses can focus on these areas to optimize delivery efficiency.
 """)
 
-# Step 8: Prediction on New Data
 st.header('Predict Delivery Time')
 
 st.write('You can input new delivery data to predict the delivery time.')
@@ -239,7 +233,6 @@ if st.button('Predict'):
     prediction = model.predict(input_processed)
     st.success(f'Estimated Delivery Time: {prediction[0]:.2f} minutes')
 
-# Step 9: Conclusion
 st.header('Conclusion')
 st.write("""
 Including the **distance** between the restaurant and the delivery location significantly improves the model's predictive ability. The distance is one of the most important factors affecting delivery time, as expected. This dashboard allows you to explore the factors affecting delivery times and predict delivery durations based on various inputs. By analyzing the feature importance and model performance, businesses can optimize operations to improve delivery efficiency.
